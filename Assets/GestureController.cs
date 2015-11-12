@@ -10,7 +10,7 @@ public class GestureController : MonoBehaviour {
 	void Start () {
         controller = new Controller();
         controller.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
-        controller.Config.SetFloat("Gesture.Swipe.MinLength", 150.0f);
+        controller.Config.SetFloat("Gesture.Swipe.MinLength", 100.0f);
         controller.Config.SetFloat("Gesture.Swipe.MinVelocity", 20.0f);
         controller.Config.Save();
         inMenu = false;
@@ -25,13 +25,12 @@ public class GestureController : MonoBehaviour {
             if(g.Type == Gesture.GestureType.TYPE_SWIPE)
             {
                 SwipeGesture swipe = new SwipeGesture(g);
+                float speed = swipe.Speed;
                 if (swipe.Direction.y < -0.8)
                     ui.setDropDown(true);
                 else if (swipe.Direction.y > 0.8)
                     ui.setDropDown(false);
-            
-                float speed = swipe.Speed;
-                if (swipe.Direction.x < 0)
+                else if (swipe.Direction.x < 0)
                     ui.scrollTo(-speed, 0f);
                 else
                     ui.scrollTo(speed, 0f);
