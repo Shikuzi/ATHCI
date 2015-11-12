@@ -19,14 +19,26 @@ public class UIController : MonoBehaviour {
             showDropDown = showDropDown ? false : true;
             animationController.SetBool("ShowDropDown", showDropDown);
         }
+
         if(Input.GetKey(KeyCode.RightArrow))
         {
-            scroll.velocity = new Vector2(-125f, 0f);
+            scrollTo(-150f, 0f);
         }
 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            scroll.velocity = new Vector2(125f, 0f);
+            scrollTo(150f, 0f);
         }
+    }
+
+    public void setDropDown(bool v)
+    {
+        animationController.SetBool("ShowDropDown", v);
+        showDropDown = v;
+    }
+
+    public void scrollTo(float x, float y)
+    {
+        scroll.velocity = new Vector2(x, 0f);
     }
 }
