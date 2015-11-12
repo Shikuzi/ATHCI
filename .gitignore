@@ -19,3 +19,14 @@
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+
+# System dependent plugins
+LeapMotion
+LeapMotion.meta
+LeapMotion+OVR
+LeapMotion+OVR.meta
+LeapMotionVR
+LeapMotionVR.meta
+OVR
+OVR.meta
+Assets/Plugins
