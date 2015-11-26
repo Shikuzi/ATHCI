@@ -42,6 +42,10 @@ public class MovementController : MonoBehaviour {
         mHighlight = hl;
     } 
 
+    private float SnapToGrid(float f, float grid) {
+        return (int)((f + grid / 2) / grid) * grid;
+    }
+
 	// Use this for initialization
 	void Start() {
 	
@@ -58,6 +62,7 @@ public class MovementController : MonoBehaviour {
                 Input.mousePosition.y, 
                 mScreenPoint.z
             ));
+        mOffset.y = 0;
         SetHighlight(Highlight.Select);
 	}
 
@@ -78,8 +83,15 @@ public class MovementController : MonoBehaviour {
                 Input.mousePosition.x, 
                 Input.mousePosition.y, 
                 mScreenPoint.z);
-        Vector3 cursorPosition = camera.ScreenToWorldPoint(cursorPoint) + 
-            mOffset;
+        Vector3 worldpos = camera.ScreenToWorldPoint(cursorPoint);
+        Vector3 restricted = new Vector3(
+            worldpos.x,
+            transform.position.y,
+            worldpos.z
+        );
+        Vector3 cursorPosition = restricted + mOffset;
+        cursorPosition.x = SnapToGrid(cursorPosition.x, 0.5f);
+        cursorPosition.z = SnapToGrid(cursorPosition.z, 0.5f);
         transform.position = cursorPosition;
 	}
 
