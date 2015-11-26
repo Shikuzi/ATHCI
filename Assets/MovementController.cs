@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class MovementController : MonoBehaviour {
     private bool mCollides;
@@ -43,7 +44,7 @@ public class MovementController : MonoBehaviour {
     } 
 
     private float SnapToGrid(float f, float grid) {
-        return (int)((f + grid / 2) / grid) * grid;
+        return (float)Math.Floor((double)((f + grid / 2) / grid)) * grid;
     }
 
 	// Use this for initialization
