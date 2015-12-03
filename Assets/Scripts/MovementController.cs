@@ -24,7 +24,7 @@ public class MovementController : MonoBehaviour {
                     mat.color -= new Color(0.5f, 0.0f, 0.0f);
                     break;
                 case Highlight.Select:
-                    mat.color -= new Color(0.0f, 0.3f, 0.3f);
+                    mat.color -= new Color(0.0f, 0.5f, 0.5f);
                     break;
                 }
 
@@ -34,7 +34,7 @@ public class MovementController : MonoBehaviour {
                     mat.color += new Color(0.5f, 0.0f, 0.0f);
                     break;
                 case Highlight.Select:
-                    mat.color += new Color(0.0f, 0.3f, 0.3f);
+                    mat.color += new Color(0.0f, 0.5f, 0.5f);
                     break;
                 }
             }
