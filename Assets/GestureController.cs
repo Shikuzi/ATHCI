@@ -10,6 +10,10 @@ public class GestureController : MonoBehaviour {
     enum Mode { Grab, GrabReleased, SwipeGesture,  None};
     Mode mode;
 
+    public static Vector3 Origin { get; set; }
+    public static Vector3 Direction { get; set; }
+    public static Vector3 HitPosition { get; set; }
+
     private void StartPointing(GameObject obj) {
         obj.BroadcastMessage("OnPointingStart");
     }
@@ -39,19 +43,18 @@ public class GestureController : MonoBehaviour {
         Pointable knownPointable = rightHand.Pointables.Frontmost;
         Vector handCenter = rightHand.PalmPosition;
 
-        Vector3 originHandcenter, directionFinger;
-
         Debug.Log("FINGER ID: " + knownPointable.Id);
 
-        directionFinger = knownPointable.Direction.ToUnity();
+        Direction = knownPointable.Direction.ToUnity();
         Debug.Log(knownPointable.Direction.ToUnity());
 
-        originHandcenter = handCenter.ToUnityScaled(false);
+        Origin = handCenter.ToUnityScaled(false);
         Debug.Log(handCenter.ToUnityScaled(false));
 
         RaycastHit hit;
 
-        if(Physics.Raycast(originHandcenter, directionFinger, out hit)) {
+        if(Physics.Raycast(Origin, Direction, out hit)) {
+            HitPosition = hit.point;
             StartPointing(hit.collider.gameObject);
         }
 
