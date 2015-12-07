@@ -7,7 +7,7 @@ public class GestureController : MonoBehaviour {
     // Use this for initialization
     bool inMenu;
     public UIController ui;
-    enum Mode { Grab, SwipeGesture, None};
+    enum Mode { Grab, GrabReleased, SwipeGesture,  None};
     Mode mode;
 
     private void StartPointing(GameObject obj) {
@@ -15,7 +15,7 @@ public class GestureController : MonoBehaviour {
     }
 
     private void StopPointing() {
-        var colliders = GameObject.FindObjectOfType<Collider>() as Collider[];
+        var colliders = GameObject.FindObjectsOfType<Collider>() as Collider[];
         foreach(var col in colliders) {
             col.gameObject.BroadcastMessage("OnPointingStop");
         }
@@ -54,6 +54,18 @@ public class GestureController : MonoBehaviour {
         if(Physics.Raycast(originHandcenter, directionFinger, out hit)) {
             StartPointing(hit.collider.gameObject);
         }
+
+        if (leftHand.GrabStrength == 1)
+            mode = Mode.Grab;
+
+        if (mode == Mode.Grab && leftHand.GrabStrength < 1)
+            mode = Mode.GrabReleased;
+
+        if (mode == Mode.Grab)
+            Debug.Log("Moving furniture..");
+        else if (mode == Mode.GrabReleased)
+            Debug.Log("Released furniture");
+
 
         GestureList gestures = frame.Gestures();
         foreach(Gesture g in gestures)

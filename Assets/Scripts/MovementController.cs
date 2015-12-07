@@ -12,6 +12,7 @@ public class MovementController : MonoBehaviour {
         Select
     }
 
+
     private Highlight mHighlight = Highlight.None;
 
     private void SetHighlight(Highlight hl) {
