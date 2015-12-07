@@ -12,11 +12,6 @@ public class MovementController : MonoBehaviour {
         Select
     }
 
-    public void OnPointingStart()
-    {
-        Debug.Log("hitttt");
-    }
-
     private Highlight mHighlight = Highlight.None;
 
     private void SetHighlight(Highlight hl) {
@@ -56,6 +51,19 @@ public class MovementController : MonoBehaviour {
 	void Start() {
 	
 	}
+
+    void OnPointingStart() {
+        Debug.Log("OnPointingStart");
+        SetHighlight(Highlight.Select);
+    }
+
+    void OnPointingStop() {
+
+    }
+
+    void OnPointingMove() {
+
+    }
 
     void OnMouseDown() {
         var camera = Camera.allCameras[0];
