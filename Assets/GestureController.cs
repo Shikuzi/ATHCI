@@ -17,6 +17,14 @@ public class GestureController : MonoBehaviour {
         controller.Config.Save();
         inMenu = false;
     }
+
+    Leap.Vector leapToWorld(Leap.Vector leapPoint, InteractionBox iBox)
+    {
+        leapPoint.z *= -1.0f; //right-hand to left-hand rule
+        Leap.Vector normalized = iBox.NormalizePoint(leapPoint, false);
+        normalized += new Leap.Vector(0.5f, 0f, 0.5f); //recenter origin
+        return normalized * 100.0f; //scale
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -24,11 +32,31 @@ public class GestureController : MonoBehaviour {
         HandList hands = frame.Hands;
         Hand rightHand = frame.Hands.Rightmost;
         Hand leftHand = frame.Hands.Leftmost;
-        Pointable knownPointable = leftHand.Pointables.Frontmost;
+        Pointable knownPointable = rightHand.Pointables.Frontmost;
+        Vector handCenter = rightHand.PalmPosition;
+        Vector3 originHandcenter, directionFinger;
+        RaycastHit hit;
 
-        Debug.Log("pointable: " + knownPointable.ToString());
+        directionFinger = knownPointable.Direction.ToUnity();
+        Debug.Log(knownPointable.Direction.ToUnity());
 
-        if (rightHand.GrabStrength == 1)
+        InteractionBox iBox = controller.Frame().InteractionBox;
+        Vector leapPoint = knownPointable.StabilizedTipPosition;
+
+        float x = handCenter.x;
+        float y = handCenter.y;
+        float z = handCenter.z;
+
+        originHandcenter = handCenter.ToUnityScaled(false);
+        Debug.Log(handCenter.ToUnityScaled(false));
+
+        if (Physics.Raycast(originHandcenter, directionFinger, out hit))
+        {
+            hit.collider.gameObject.BroadcastMessage("OnPointingStart");
+        }
+
+
+        /*if (rightHand.GrabStrength == 1)
         {
             mode = Mode.Grab;
 
@@ -43,7 +71,7 @@ public class GestureController : MonoBehaviour {
             float yaw = rightHand.Direction.Yaw;
             float roll = rightHand.PalmNormal.Roll;
             //Debug.Log("GrabMode : pitch="+pitch + " yaw=" + yaw + " roll=" + roll);
-        }
+        }*/
         
         GestureList gestures = frame.Gestures();
         foreach(Gesture g in gestures)

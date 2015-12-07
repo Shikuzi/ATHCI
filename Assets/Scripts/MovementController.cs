@@ -12,6 +12,11 @@ public class MovementController : MonoBehaviour {
         Select
     }
 
+    public void OnPointingStart()
+    {
+        Debug.Log("hitttt");
+    }
+
     private Highlight mHighlight = Highlight.None;
 
     private void SetHighlight(Highlight hl) {
