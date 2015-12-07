@@ -9,6 +9,7 @@ public class GestureController : MonoBehaviour {
     public UIController ui;
     enum Mode { Grab, GrabReleased, SwipeGesture,  None};
     Mode mode;
+    GameObject currentobj;
 
     public static Vector3 Origin { get; set; }
     public static Vector3 Direction { get; set; }
@@ -18,11 +19,22 @@ public class GestureController : MonoBehaviour {
         obj.BroadcastMessage("OnPointingStart");
     }
 
+    private void GrabPointing(GameObject obj)
+    {
+        obj.BroadcastMessage("OnGrabbingStart");
+    }
+
+    private void MovePointing(GameObject obj)
+    {
+        obj.BroadcastMessage("OnPointingMove");
+    }
+
     private void StopPointing() {
-        var colliders = GameObject.FindObjectsOfType<Collider>() as Collider[];
+        /*var colliders = GameObject.FindObjectsOfType<Collider>() as Collider[];
         foreach(var col in colliders) {
             col.gameObject.BroadcastMessage("OnPointingStop");
-        }
+        }*/
+        currentobj.BroadcastMessage("OnPointingStop");
     }
 
 	void Start () {
@@ -43,34 +55,48 @@ public class GestureController : MonoBehaviour {
         Pointable knownPointable = rightHand.Pointables.Frontmost;
         Vector handCenter = rightHand.PalmPosition;
 
-        Debug.Log("FINGER ID: " + knownPointable.Id);
+        //Debug.Log("FINGER ID: " + knownPointable.Id);
 
         Direction = knownPointable.Direction.ToUnity();
-        Debug.Log(knownPointable.Direction.ToUnity());
+        //Debug.Log(knownPointable.Direction.ToUnity());
 
         Origin = handCenter.ToUnityScaled(false);
-        Debug.Log(handCenter.ToUnityScaled(false));
+        //Debug.Log(handCenter.ToUnityScaled(false));
 
         RaycastHit hit;
 
-        if(Physics.Raycast(Origin, Direction, out hit)) {
+        if (Physics.Raycast(Origin, Direction, out hit))
+        {
             HitPosition = hit.point;
-            StartPointing(hit.collider.gameObject);
+            currentobj = hit.collider.gameObject;
+            StartPointing(currentobj);
         }
 
-        if (leftHand.GrabStrength == 1)
+        if (mode != Mode.Grab && leftHand.GrabStrength == 1)
+        {
+            if (currentobj != null)
+                GrabPointing(currentobj);
             mode = Mode.Grab;
+        }
 
         if (mode == Mode.Grab && leftHand.GrabStrength < 1)
             mode = Mode.GrabReleased;
 
         if (mode == Mode.Grab)
-            Debug.Log("Moving furniture..");
+        {
+            if(currentobj != null)
+                MovePointing(currentobj);
+            //Debug.Log("Moving furniture..");
+        }
         else if (mode == Mode.GrabReleased)
+        {
             Debug.Log("Released furniture");
+            if(currentobj != null)
+                StopPointing();
+        }
 
 
-        GestureList gestures = frame.Gestures();
+        /*GestureList gestures = frame.Gestures();
         foreach(Gesture g in gestures)
         {
             if(g.Type == Gesture.GestureType.TYPE_SWIPE)
@@ -88,6 +114,6 @@ public class GestureController : MonoBehaviour {
                 else
                     ui.scrollTo(speed, 0f);
             }
-        }
+        }*/
 	}
 }
