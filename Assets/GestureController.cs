@@ -39,6 +39,7 @@ public class GestureController : MonoBehaviour {
 
 	void Start () {
         controller = new Controller();
+        Debug.LogWarning("Connected? "+controller.IsConnected);
         controller.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
         controller.Config.SetFloat("Gesture.Swipe.MinLength", 100.0f);
         controller.Config.SetFloat("Gesture.Swipe.MinVelocity", 20.0f);
@@ -55,13 +56,8 @@ public class GestureController : MonoBehaviour {
         Pointable knownPointable = rightHand.Pointables.Frontmost;
         Vector handCenter = rightHand.PalmPosition;
 
-        //Debug.Log("FINGER ID: " + knownPointable.Id);
-
-        Direction = knownPointable.Direction.ToUnity();
-        //Debug.Log(knownPointable.Direction.ToUnity());
-
         Origin = handCenter.ToUnityScaled(false);
-        //Debug.Log(handCenter.ToUnityScaled(false));
+        Direction = knownPointable.Direction.ToUnity();
 
         RaycastHit hit;
 
