@@ -97,9 +97,10 @@ public class MovementController : MonoBehaviour {
         // tD = newpos.z - O
         // t = (newpos.z - O) / D
         
-        var t = (newpos.z - GestureController.Origin.z) / 
+        var t = (mHitPosition.z + dz - GestureController.Origin.z) /
                 GestureController.Direction.z;
-        newpos.x = GestureController.Origin + t * GestureController.Direction;
+        newpos.x = GestureController.Origin.x +
+                t * GestureController.Direction.x;
 
         newpos.x = SnapToGrid(newpos.x, kGridSize);
         newpos.z = SnapToGrid(newpos.z, kGridSize);
