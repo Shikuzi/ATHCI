@@ -41,6 +41,8 @@ public class GestureController : MonoBehaviour {
 
         Vector3 originHandcenter, directionFinger;
 
+        Debug.Log("FINGER ID: " + knownPointable.Id);
+
         directionFinger = knownPointable.Direction.ToUnity();
         Debug.Log(knownPointable.Direction.ToUnity());
 
