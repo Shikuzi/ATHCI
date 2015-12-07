@@ -3,8 +3,16 @@ using UnityEngine;
 
 public class MovementController : MonoBehaviour {
     private bool mCollides;
+
+    // For use with mouse
     private Vector3 mScreenPoint;
     private Vector3 mOffset;
+
+    // For use with gesture controller
+    private Vector3 mOrigin;
+    private Vector3 mHitPosition;
+
+    const float kGridSize = 0.5f;
 
     private enum Highlight {
         None,
@@ -57,6 +65,12 @@ public class MovementController : MonoBehaviour {
         SetHighlight(Highlight.Select);
     }
 
+    void OnGrabbingStart() {
+        Debug.Log("OnGrabbingStart");
+        mOrigin = GestureController.Origin;
+        mHitPosition = GestureController.HitPosition;
+    }
+
     void OnPointingStop() {
         Debug.Log("OnPointingStop");
 
@@ -71,6 +85,25 @@ public class MovementController : MonoBehaviour {
 
     void OnPointingMove() {
         Debug.Log("OnPointingMove");
+    
+        float dz = GestureController.Origin.z - mOrigin.z;
+        mOrigin = GestureController.Origin;
+
+        var newpos = gameObject.transform.position;
+        newpos.z += dz;
+
+        // O + tD = newpos.z
+        // tD = newpos.z - O
+        // t = (newpos.z - O) / D
+        
+        var t = (newpos.z - GestureController.Origin.z) / 
+                GestureController.Direction.z;
+        newpos.x = GestureController.Origin + t * GestureController.Direction;
+
+        newpos.x = SnapToGrid(newpos.x, kGridSize);
+        newpos.z = SnapToGrid(newpos.z, kGridSize);
+
+        gameObject.transform.position = newpos;
     }
 
     void OnMouseDown() {
@@ -112,8 +145,8 @@ public class MovementController : MonoBehaviour {
             worldpos.z
         );
         Vector3 cursorPosition = restricted + mOffset;
-        cursorPosition.x = SnapToGrid(cursorPosition.x, 0.5f);
-        cursorPosition.z = SnapToGrid(cursorPosition.z, 0.5f);
+        cursorPosition.x = SnapToGrid(cursorPosition.x, kGridSize);
+        cursorPosition.z = SnapToGrid(cursorPosition.z, kGridSize);
         transform.position = cursorPosition;
 	}
 
