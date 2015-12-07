@@ -58,11 +58,19 @@ public class MovementController : MonoBehaviour {
     }
 
     void OnPointingStop() {
+        Debug.Log("OnPointingStop");
 
+        if(mCollides) {
+            // Turn red
+            SetHighlight(Highlight.Collision);
+        } else {
+            // Turn off color
+            SetHighlight(Highlight.None);
+        }
     }
 
     void OnPointingMove() {
-
+        Debug.Log("OnPointingMove");
     }
 
     void OnMouseDown() {
