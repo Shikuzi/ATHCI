@@ -47,13 +47,13 @@ public class GestureController : MonoBehaviour {
         controller.Config.SetFloat("Gesture.Swipe.MinVelocity", 20.0f);
         controller.Config.Save();
 
-        handController = GameObject.Find("HandController").
+        handController = GameObject.Find("HeadMountedHandController").
             GetComponent("HandController") as HandController;
 
         pointingRay = new GameObject("Pointing Ray");
         GameObject cyl = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         cyl.transform.localPosition = new Vector3(0, 0.5f, 0);
-        cyl.transform.localScale = new Vector3(0.05f, 0.5f, 0.05f);
+        cyl.transform.localScale = new Vector3(0.01f, 0.5f, 0.01f);
         cyl.transform.parent = pointingRay.transform;
         var mat = cyl.GetComponent<Renderer>().material;
         mat.shader = Shader.Find("Unlit/Color");
@@ -93,7 +93,7 @@ public class GestureController : MonoBehaviour {
             pointingRay.transform.localScale = scale;
             pointingRay.transform.position = Origin;
             pointingRay.transform.rotation = 
-                Quaternion.FromToRotation(Vector3.up, HitPosition - Origin);
+                Quaternion.FromToRotation(Vector3.back, HitPosition - Origin);
         }
 
         if(mode != Mode.Grab && leftHand.GrabStrength == 1) {
