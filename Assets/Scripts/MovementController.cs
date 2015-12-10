@@ -12,7 +12,7 @@ public class MovementController : MonoBehaviour {
     private Vector3 mOrigin;
     private Vector3 mHitPosition;
 
-    const float kGridSize = 0.5f;
+    public float kGridSize = 0.5f;
 
     private enum Highlight {
         None,

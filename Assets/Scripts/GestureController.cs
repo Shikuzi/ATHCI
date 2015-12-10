@@ -15,31 +15,30 @@ public class GestureController : MonoBehaviour {
     public static Vector3 Direction { get; set; }
     public static Vector3 HitPosition { get; set; }
 
+    private void SendMessageTo(GameObject obj, string msg) {
+        obj.BroadcastMessage(msg, null, SendMessageOptions.DontRequireReceiver);
+    }
+
     private void StartPointing(GameObject obj) {
-        obj.BroadcastMessage("OnPointingStart");
+        SendMessageTo(obj, "OnPointingStart");
     }
 
     private void GrabPointing(GameObject obj)
     {
-        obj.BroadcastMessage("OnGrabbingStart");
+        SendMessageTo(obj, "OnGrabbingStart");
     }
 
     private void MovePointing(GameObject obj)
     {
-        obj.BroadcastMessage("OnPointingMove");
+        SendMessageTo(obj, "OnPointingMove");
     }
 
     private void StopPointing() {
-        /*var colliders = GameObject.FindObjectsOfType<Collider>() as Collider[];
-        foreach(var col in colliders) {
-            col.gameObject.BroadcastMessage("OnPointingStop");
-        }*/
-        currentobj.BroadcastMessage("OnPointingStop");
+        SendMessageTo(currentobj, "OnPointingStop");
     }
 
 	void Start () {
         controller = new Controller();
-        Debug.LogWarning("Connected? "+controller.IsConnected);
         controller.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
         controller.Config.SetFloat("Gesture.Swipe.MinLength", 100.0f);
         controller.Config.SetFloat("Gesture.Swipe.MinVelocity", 20.0f);
@@ -61,34 +60,32 @@ public class GestureController : MonoBehaviour {
 
         RaycastHit hit;
 
-        if (Physics.Raycast(Origin, Direction, out hit))
-        {
+        if(Physics.Raycast(Origin, Direction, out hit)) {
             HitPosition = hit.point;
             currentobj = hit.collider.gameObject;
             StartPointing(currentobj);
         }
 
-        if (mode != Mode.Grab && leftHand.GrabStrength == 1)
-        {
+        if(mode != Mode.Grab && leftHand.GrabStrength == 1) {
             if (currentobj != null)
                 GrabPointing(currentobj);
             mode = Mode.Grab;
         }
 
-        if (mode == Mode.Grab && leftHand.GrabStrength < 1)
+        if(mode == Mode.Grab && leftHand.GrabStrength < 1) {
             mode = Mode.GrabReleased;
-
-        if (mode == Mode.Grab)
-        {
-            if(currentobj != null)
-                MovePointing(currentobj);
-            //Debug.Log("Moving furniture..");
         }
-        else if (mode == Mode.GrabReleased)
-        {
+
+        if(mode == Mode.Grab) {
+            if(currentobj != null) {
+                MovePointing(currentobj);
+            }
+            //Debug.Log("Moving furniture..");
+        } else if(mode == Mode.GrabReleased) {
             Debug.Log("Released furniture");
-            if(currentobj != null)
+            if(currentobj != null) {
                 StopPointing();
+            }
         }
 
 
