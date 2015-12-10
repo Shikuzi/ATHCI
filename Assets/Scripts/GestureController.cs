@@ -10,6 +10,9 @@ public class GestureController : MonoBehaviour {
     enum Mode { Grab, GrabReleased, SwipeGesture,  None};
     Mode mode;
     GameObject currentobj;
+    GameObject pointingRay;
+
+    HandController handController;
 
     public static Vector3 Origin { get; set; }
     public static Vector3 Direction { get; set; }
@@ -43,6 +46,21 @@ public class GestureController : MonoBehaviour {
         controller.Config.SetFloat("Gesture.Swipe.MinLength", 100.0f);
         controller.Config.SetFloat("Gesture.Swipe.MinVelocity", 20.0f);
         controller.Config.Save();
+
+        handController = GameObject.Find("HandController").
+            GetComponent("HandController") as HandController;
+
+        pointingRay = new GameObject("Pointing Ray");
+        GameObject cyl = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        cyl.transform.localPosition = new Vector3(0, 0.5f, 0);
+        cyl.transform.localScale = new Vector3(0.05f, 0.5f, 0.05f);
+        cyl.transform.parent = pointingRay.transform;
+        var mat = cyl.GetComponent<Renderer>().material;
+        mat.shader = Shader.Find("Unlit/Color");
+        mat.color = new Color(0.2f, 0.8f, 0.7f);
+
+        pointingRay.transform.position = new Vector3(0, 0, 0);
+
         inMenu = false;
     }
 
@@ -55,7 +73,9 @@ public class GestureController : MonoBehaviour {
         Pointable knownPointable = rightHand.Pointables.Frontmost;
         Vector handCenter = rightHand.PalmPosition;
 
-        Origin = handCenter.ToUnityScaled(false);
+        /* Origin = handCenter.ToUnityScaled(false); */
+        var tipPosition = knownPointable.TipPosition.ToUnityScaled(false);
+        Origin = handController.transform.TransformPoint(tipPosition);
         Direction = knownPointable.Direction.ToUnity();
 
         RaycastHit hit;
@@ -64,6 +84,16 @@ public class GestureController : MonoBehaviour {
             HitPosition = hit.point;
             currentobj = hit.collider.gameObject;
             StartPointing(currentobj);
+
+            Debug.DrawRay(Origin, HitPosition - Origin, Color.red);
+
+            // Update pointing ray
+            var scale = pointingRay.transform.localScale;
+            scale.y = (HitPosition - Origin).magnitude;
+            pointingRay.transform.localScale = scale;
+            pointingRay.transform.position = Origin;
+            pointingRay.transform.rotation = 
+                Quaternion.FromToRotation(Vector3.up, HitPosition - Origin);
         }
 
         if(mode != Mode.Grab && leftHand.GrabStrength == 1) {
@@ -82,7 +112,7 @@ public class GestureController : MonoBehaviour {
             }
             //Debug.Log("Moving furniture..");
         } else if(mode == Mode.GrabReleased) {
-            Debug.Log("Released furniture");
+            /* Debug.Log("Released furniture"); */
             if(currentobj != null) {
                 StopPointing();
             }
