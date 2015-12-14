@@ -16,10 +16,10 @@ public class MovementController : MonoBehaviour {
 
     private enum Highlight {
         None,
+        Hover,
+        Select,
         Collision,
-        Select
     }
-
 
     private Highlight mHighlight = Highlight.None;
 
@@ -29,21 +29,27 @@ public class MovementController : MonoBehaviour {
             foreach(var mat in rend.materials) {
                 // Remove old color
                 switch(mHighlight) {
-                case Highlight.Collision:
-                    mat.color -= new Color(0.5f, 0.0f, 0.0f);
+                case Highlight.Hover:
+                    mat.color -= new Color(0.7f, 0.7f, 0.7f);
                     break;
                 case Highlight.Select:
-                    mat.color -= new Color(0.0f, 0.5f, 0.5f);
+                    mat.color -= new Color(0.0f, 0.7f, 0.7f);
+                    break;
+                case Highlight.Collision:
+                    mat.color -= new Color(0.7f, 0.0f, 0.0f);
                     break;
                 }
 
                 // Add new color
                 switch(hl) {
-                case Highlight.Collision:
-                    mat.color += new Color(0.5f, 0.0f, 0.0f);
+                case Highlight.Hover:
+                    mat.color += new Color(0.7f, 0.7f, 0.7f);
                     break;
                 case Highlight.Select:
-                    mat.color += new Color(0.0f, 0.5f, 0.5f);
+                    mat.color += new Color(0.0f, 0.7f, 0.7f);
+                    break;
+                case Highlight.Collision:
+                    mat.color += new Color(0.7f, 0.0f, 0.0f);
                     break;
                 }
             }
@@ -62,18 +68,16 @@ public class MovementController : MonoBehaviour {
 	}
 
     void OnPointingStart() {
-        Debug.Log("OnPointingStart");
-        SetHighlight(Highlight.Select);
+        SetHighlight(Highlight.Hover);
     }
 
     void OnGrabbingStart() {
-        Debug.Log("OnGrabbingStart");
+        SetHighlight(Highlight.Select);
         mOrigin = GestureController.Origin;
         mHitPosition = GestureController.HitPosition;
     }
 
     void OnPointingStop() {
-        Debug.Log("OnPointingStop");
 
         if(mCollides) {
             // Turn red
@@ -84,9 +88,11 @@ public class MovementController : MonoBehaviour {
         }
     }
 
+    void OnGrabbingStop() {
+        SetHighlight(Highlight.Hover);
+    }
+
     void OnPointingMove() {
-        Debug.Log("OnPointingMove");
-    
         float dz = GestureController.Origin.z - mOrigin.z;
         mOrigin = GestureController.Origin;
 
