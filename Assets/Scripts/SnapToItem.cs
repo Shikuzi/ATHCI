@@ -20,7 +20,7 @@ public class SnapToItem : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    if(controller.showDropDown && Mathf.Abs(scroll.velocity.x) < 100)
+	    if(UIController.showDropDown && Mathf.Abs(scroll.velocity.x) < 100)
         {
             float distBetween = Mathf.Abs(content.GetChild(0).gameObject.GetComponent<RectTransform>().position.x - content.GetChild(1).gameObject.GetComponent<RectTransform>().position.x); // +  2 * padding
             int min = -1;
