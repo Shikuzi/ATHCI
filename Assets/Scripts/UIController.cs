@@ -4,7 +4,7 @@ using System.Collections;
 
 public class UIController : MonoBehaviour {
     Animator animationController;
-    public bool showDropDown = false;
+    public static bool showDropDown = false;
     public ScrollRect scroll;
     
 	// Use this for initialization
@@ -19,7 +19,7 @@ public class UIController : MonoBehaviour {
             showDropDown = showDropDown ? false : true;
             animationController.SetBool("ShowDropDown", showDropDown);
         }
-
+        /*
         if(Input.GetKey(KeyCode.RightArrow))
         {
             scrollTo(-150f, 0f);
@@ -28,7 +28,7 @@ public class UIController : MonoBehaviour {
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             scrollTo(150f, 0f);
-        }
+        }µ*/
     }
 
     public void setDropDown(bool v)
@@ -36,9 +36,9 @@ public class UIController : MonoBehaviour {
         animationController.SetBool("ShowDropDown", v);
         showDropDown = v;
     }
-
+    /*
     public void scrollTo(float x, float y)
     {
         scroll.velocity = new Vector2(x, 0f);
-    }
+    }*/
 }
