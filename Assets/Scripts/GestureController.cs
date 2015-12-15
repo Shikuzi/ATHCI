@@ -106,6 +106,7 @@ public class GestureController : MonoBehaviour {
 
 	void Start () {
         controller = new Controller();
+        ui = GameObject.Find("Menu").GetComponent<UIController>();
         controller.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
         controller.Config.SetFloat("Gesture.Swipe.MinLength", 100.0f);
         controller.Config.SetFloat("Gesture.Swipe.MinVelocity", 20.0f);
@@ -138,10 +139,9 @@ public class GestureController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         Frame frame = controller.Frame();
-        HandList hands = frame.Hands;
         Hand rightHand = frame.Hands.Rightmost;
         Hand leftHand = frame.Hands.Leftmost;
-        Pointable knownPointable = rightHand.Pointables.Frontmost;
+        
 
         // For some reason the Leap Motion can't tell right from left when
         // head mounted ???
@@ -152,6 +152,21 @@ public class GestureController : MonoBehaviour {
         if(frame.Hands.Count < 2) {
             SetPointingRayEnabled(false);
             SetMode(Mode.Search);
+
+            if (leftHand != null && leftHand.IsLeft)//open menu
+            {
+                if (leftHand.PalmVelocity.y > 300)
+                {
+                    inMenu = true;
+                    ui.setDropDown(true);
+                }
+                else if (leftHand.PalmVelocity.y < -300)
+                {
+                    inMenu = false;
+                    ui.setDropDown(false);
+                }
+            }
+
         } else {
             SetPointingRayEnabled(true);
 
@@ -168,7 +183,7 @@ public class GestureController : MonoBehaviour {
             if(Physics.Raycast(temporigin, tempdirection, out hit) && 
                     indexFinger.IsExtended) {
                 // Threshold below which not to update (prevent glitchiness)
-                if(hit.distance > 0.1) {
+                if(hit.distance > 0.01) {
                     Origin = temporigin;
                     Direction = tempdirection;
                     HitPosition = hit.point;
@@ -189,6 +204,13 @@ public class GestureController : MonoBehaviour {
                 SetPointingRayEnabled(false);
                 SetMode(Mode.Search);
             }
+
+
+            if (inMenu && indexFinger.IsExtended)
+            {
+                if(indexFinger.TipVelocity.z > 400)
+                    Debug.Log("fingerTAP!");
+            }
         }
 
         if(mode == Mode.Hover && leftHand.GrabStrength >= kGrabTreshold) {
@@ -202,46 +224,17 @@ public class GestureController : MonoBehaviour {
             MovePointing();
         }
 
-        /*
-        if(mode != Mode.Grab && leftHand.GrabStrength == 1) {
-            if (currentobj != null) {
-                GrabPointing(currentobj);
-            }
-            mode = Mode.Grab;
-        }
-
-        if(mode == Mode.Grab && leftHand.GrabStrength < 1) {
-            mode = Mode.GrabReleased;
-            if(currentobj != null) {
-                StopPointing();
-            }
-        }
-
-        if(mode == Mode.Grab) {
-            if(currentobj != null) {
-                MovePointing(currentobj);
-            }
-        }*/
-
+       
 
         /*GestureList gestures = frame.Gestures();
         foreach(Gesture g in gestures)
         {
-            if(g.Type == Gesture.GestureType.TYPE_SWIPE)
+            if(g.Type == Gesture.GestureType.TYPE_SCREEN_TAP)
             {
-                mode = Mode.SwipeGesture;
-                Debug.Log("SwipeMode");
-                SwipeGesture swipe = new SwipeGesture(g);
-                float speed = swipe.Speed;
-                if (swipe.Direction.y < -0.8)
-                    ui.setDropDown(true);
-                else if (swipe.Direction.y > 0.8)
-                    ui.setDropDown(false);
-                else if (swipe.Direction.x < 0)
-                    ui.scrollTo(-speed, 0f);
-                else
-                    ui.scrollTo(speed, 0f);
+                ScreenTapGesture tap = new ScreenTapGesture(g);
+                Debug.Log("screentap! :" + tap.Position);
             }
         }*/
+
 	}
 }
