@@ -14,7 +14,6 @@ public class ButtonInformation : MonoBehaviour {
     {
         this.row = row;
         this.col = col;
-        Debug.Log(this.row + "," + this.col);
     }
 
     public void click()
