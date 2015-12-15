@@ -59,6 +59,7 @@ public class ContentManager : MonoBehaviour {
 
     public static void spawnObject(int row, int col)
     {
+        Debug.Log("HERE!");
         int item = row * 7 + col;
         GameObject obj = Instantiate(itemArray[item] as GameObject);
         obj.transform.position = new Vector3(0f, 0f, 2f);

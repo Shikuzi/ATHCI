@@ -5,8 +5,8 @@ using System.Linq;
 public class Walls {
     public const int North = 0, East = 1, South = 2, West = 3; 
 
-    public static float Width = 16;
-    public static float Height = 16;
+    public static float Width = 12;
+    public static float Height = 12;
 
     public static int GetWall(Vector3 o, Vector3 d) {
         float w2 = Width/2, h2 = Height/2;

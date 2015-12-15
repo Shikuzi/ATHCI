@@ -79,7 +79,6 @@ public class MovementController : MonoBehaviour {
     }
 
     void OnPointingStop() {
-
         if(mCollides) {
             // Turn red
             SetHighlight(Highlight.Collision);
