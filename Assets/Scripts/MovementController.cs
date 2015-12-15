@@ -75,6 +75,7 @@ public class MovementController : MonoBehaviour {
         SetHighlight(Highlight.Select);
         mOrigin = GestureController.Origin;
         mHitPosition = GestureController.HitPosition;
+        // mOffset = mOrigin - mHitPosition;
     }
 
     void OnPointingStop() {
@@ -92,26 +93,66 @@ public class MovementController : MonoBehaviour {
         SetHighlight(Highlight.Hover);
     }
 
+    private void SnapToWall(int wall) {
+        var pos = gameObject.transform.position;
+        var angle = gameObject.transform.localRotation.eulerAngles;
+        float prevangle = angle.y;
+
+        float w2 = Walls.Width / 2, h2 = Walls.Height / 2;
+
+        switch(wall) {
+        case Walls.North:
+            pos.z = h2;
+            angle.y = 0;
+            break;
+        case Walls.East:
+            pos.x = w2;
+            angle.y = 90;
+            break;
+        case Walls.South:
+            pos.z = -h2;
+            angle.y = 180;
+            break;
+        case Walls.West:
+            pos.x = -w2;
+            angle.y = 270;
+            break;
+        }
+
+        gameObject.transform.position = pos;
+        gameObject.transform.localRotation = Quaternion.Euler(angle);
+    }
+
     void OnPointingMove() {
-        float dz = GestureController.Origin.z - mOrigin.z;
-        mOrigin = GestureController.Origin;
-
         var newpos = gameObject.transform.position;
-        newpos.z += dz;
 
-        // O + tD = newpos.z
-        // tD = newpos.z - O
-        // t = (newpos.z - O) / D
-        
-        var t = (mHitPosition.z + dz - GestureController.Origin.z) /
-                GestureController.Direction.z;
-        newpos.x = GestureController.Origin.x +
-                t * GestureController.Direction.x;
+        var wall = Walls.GetWall(GestureController.Origin,
+                GestureController.Direction);
+
+        if(wall == Walls.North || wall == Walls.South) {
+            // O + tD = hitpos.z
+            // tD = hitpos.z - O
+            // t = (hitpos.z - O) / D
+
+            var t = (mHitPosition.z - GestureController.Origin.z) /
+                    GestureController.Direction.z;
+            newpos.x = GestureController.Origin.x +
+                    t * GestureController.Direction.x;
+            // newpos.x -= mOffset.x;
+        } else {
+            var t = (mHitPosition.x - GestureController.Origin.x) /
+                    GestureController.Direction.x;
+            newpos.z = GestureController.Origin.z +
+                    t * GestureController.Direction.z;
+            // newpos.z -= mOffset.z;
+        }
 
         newpos.x = SnapToGrid(newpos.x, kGridSize);
         newpos.z = SnapToGrid(newpos.z, kGridSize);
 
         gameObject.transform.position = newpos;
+
+        SnapToWall(wall);
     }
 
     void OnMouseDown() {
@@ -156,6 +197,10 @@ public class MovementController : MonoBehaviour {
         cursorPosition.x = SnapToGrid(cursorPosition.x, kGridSize);
         cursorPosition.z = SnapToGrid(cursorPosition.z, kGridSize);
         transform.position = cursorPosition;
+
+        var ray = camera.ScreenPointToRay(Input.mousePosition);
+        var wall = Walls.GetWall(ray.origin, ray.direction);
+        SnapToWall(wall);
 	}
 
     void OnTriggerEnter(Collider collider) {

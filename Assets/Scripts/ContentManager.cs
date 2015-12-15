@@ -38,7 +38,6 @@ public class ContentManager : MonoBehaviour {
                 transform.GetChild(row).transform.GetChild(col).gameObject.GetComponent<Button>().GetComponent<ButtonInformation>().setInformation(row, col);
                 transform.GetChild(row).transform.GetChild(col).gameObject.GetComponent<Image>().enabled = true;
                 // transform.GetChild(row).transform.GetChild(col).gameObject.GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0));
-                break;
             }
             else
             {

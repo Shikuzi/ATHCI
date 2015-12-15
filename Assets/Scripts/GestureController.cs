@@ -173,7 +173,7 @@ public class GestureController : MonoBehaviour {
                     Direction = tempdirection;
                     HitPosition = hit.point;
                     UpdatePointingRay();
-                    
+
                     if(mode != Mode.Active) {
                         var newobj = hit.collider.gameObject;
 
