@@ -133,13 +133,17 @@ public class MovementController : MonoBehaviour {
             // tD = hitpos.z - O
             // t = (hitpos.z - O) / D
 
-            var t = (mHitPosition.z - GestureController.Origin.z) /
+            var z = (wall == Walls.North ? 1 : -1) * Walls.Height / 2;
+
+            var t = (z - GestureController.Origin.z) /
                     GestureController.Direction.z;
             newpos.x = GestureController.Origin.x +
                     t * GestureController.Direction.x;
             // newpos.x -= mOffset.x;
         } else {
-            var t = (mHitPosition.x - GestureController.Origin.x) /
+            var x = (wall == Walls.East ? 1 : -1) * Walls.Height / 2;
+
+            var t = (x - GestureController.Origin.x) /
                     GestureController.Direction.x;
             newpos.z = GestureController.Origin.z +
                     t * GestureController.Direction.z;
