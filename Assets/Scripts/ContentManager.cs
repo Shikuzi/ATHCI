@@ -69,7 +69,28 @@ public class ContentManager : MonoBehaviour {
         {
             int item = row * 7 + col;
             GameObject obj = Instantiate(itemArray[item] as GameObject);
-            obj.transform.position = new Vector3(0f, 0f, Walls.Height/2);
+
+            var wall = Walls.GetWall(GestureController.Origin,
+                    GestureController.Direction);
+            var w2 = Walls.Width / 2;
+            var h2 = Walls.Height / 2;
+            float x = 0, z = 0;
+            switch(wall) {
+            case Walls.North:
+                z = h2;
+                break;
+            case Walls.East:
+                x = w2;
+                break;
+            case Walls.South:
+                z = -h2;
+                break;
+            case Walls.West:
+                x = -w2;
+                break;
+            }
+
+            obj.transform.position = new Vector3(x, 0f, z);
             obj.AddComponent<MovementController>();
             GameObject.FindObjectOfType<UIController>().setDropDown(false);
             spawnTimer = 0;
