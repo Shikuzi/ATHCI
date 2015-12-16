@@ -2,7 +2,7 @@
 using UnityEngine;
 
 public class MovementController : MonoBehaviour {
-    private bool mCollides;
+    public bool mCollides;
 
     // For use with mouse
     private Vector3 mScreenPoint;
@@ -14,14 +14,14 @@ public class MovementController : MonoBehaviour {
 
     public float kGridSize = 0.5f;
 
-    private enum Highlight {
+    public enum Highlight {
         None,
         Hover,
         Select,
         Collision,
     }
 
-    private Highlight mHighlight = Highlight.None;
+    public Highlight mHighlight = Highlight.None;
 
     private void SetHighlight(Highlight hl) {
         var rends = GetComponentsInChildren<Renderer>();
@@ -70,8 +70,10 @@ public class MovementController : MonoBehaviour {
     void Update() {
         if(mHighlight != Highlight.Select && mHighlight != Highlight.Hover) {
             if(mCollides) {
+                // Turn red
                 SetHighlight(Highlight.Collision);
             } else {
+                // Turn off color
                 SetHighlight(Highlight.None);
             }
         }
@@ -89,13 +91,7 @@ public class MovementController : MonoBehaviour {
     }
 
     void OnPointingStop() {
-        if(mCollides) {
-            // Turn red
-            SetHighlight(Highlight.Collision);
-        } else {
-            // Turn off color
-            SetHighlight(Highlight.None);
-        }
+        SetHighlight(Highlight.None);
     }
 
     void OnGrabbingStop() {
@@ -184,13 +180,7 @@ public class MovementController : MonoBehaviour {
 	}
 
     void OnMouseUp() {
-        if(mCollides) {
-            // Turn red
-            SetHighlight(Highlight.Collision);
-        } else {
-            // Turn off color
-            SetHighlight(Highlight.None);
-        }
+        SetHighlight(Highlight.None);
     }
 
 	void OnMouseDrag() {
@@ -217,6 +207,10 @@ public class MovementController : MonoBehaviour {
 	}
 
     void OnTriggerEnter(Collider collider) {
+        mCollides = true;
+    }
+
+    void OnTriggerStay(Collider collider) {
         mCollides = true;
     }
 
