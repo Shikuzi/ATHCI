@@ -8,9 +8,15 @@ using System.IO;
 public class ContentManager : MonoBehaviour {
     public GameObject itemPrefab;
     private static ArrayList itemArray;
+    private static float spawnTimer = 0;
     // Use this for initialization
     void Start () {
         loadContent();
+    }
+
+    void Update()
+    {
+        spawnTimer += Time.deltaTime;
     }
 
     // Load all the models
@@ -59,12 +65,16 @@ public class ContentManager : MonoBehaviour {
 
     public static void spawnObject(int row, int col)
     {
-        Debug.Log("HERE!");
-        int item = row * 7 + col;
-        GameObject obj = Instantiate(itemArray[item] as GameObject);
-        obj.transform.position = new Vector3(0f, 0f, 2f);
-        obj.AddComponent<MovementController>();
-        GameObject.FindObjectOfType<UIController>().setDropDown(false);
+        Debug.Log(spawnTimer + " Spawned");
+        if (spawnTimer > 0.5)
+        {
+            int item = row * 7 + col;
+            GameObject obj = Instantiate(itemArray[item] as GameObject);
+            obj.transform.position = new Vector3(0f, 0f, Walls.Height/2);
+            obj.AddComponent<MovementController>();
+            GameObject.FindObjectOfType<UIController>().setDropDown(false);
+            spawnTimer = 0;
+        }
     }
 
     public static Texture2D LoadImage(string imageName)

@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Leap;
+using System;
+
 
 public class GestureController : MonoBehaviour {
     enum Mode {
@@ -28,7 +30,7 @@ public class GestureController : MonoBehaviour {
     public Color kBeamSearchColor = new Color(1,1,1,0.25f);
     public Color kBeamHoverColor  = new Color(1,1,1);
     public Color kBeamActiveColor = new Color(0.2f, 0.8f, 0.7f);
-    public float kGrabTreshold = 0.7f;
+    public float kGrabTreshold = 0.75f;
 
     private void SetMode(Mode m) {
         mode = m;
@@ -108,8 +110,10 @@ public class GestureController : MonoBehaviour {
         controller = new Controller();
         ui = GameObject.Find("Menu").GetComponent<UIController>();
         controller.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
-        controller.Config.SetFloat("Gesture.Swipe.MinLength", 100.0f);
-        controller.Config.SetFloat("Gesture.Swipe.MinVelocity", 20.0f);
+        controller.EnableGesture(Gesture.GestureType.TYPE_CIRCLE);
+
+        controller.Config.SetFloat("Gesture.Circle.MinRadius", 30.0f);
+        controller.Config.SetFloat("Gesture.Circle.MinArc", 2.5f);
         controller.Config.Save();
 
         handController = GameObject.Find("HandController").
@@ -179,38 +183,62 @@ public class GestureController : MonoBehaviour {
                    indexFinger.Direction.ToUnity());
 
             RaycastHit hit;
+            RaycastHit2D hit2D;
+            Ray ray = new Ray(temporigin,tempdirection);
 
-            if(Physics.Raycast(temporigin, tempdirection, out hit) && 
-                    indexFinger.IsExtended) {
+            hit2D = Physics2D.GetRayIntersection(ray);
+
+            if (inMenu)
+            {
+                if (hit2D != null && hit2D.collider != null)
+                {
+                    if (hit2D.collider.gameObject.tag.CompareTo("Button") == 0 && leftHand != null && leftHand.IsLeft && leftHand.PalmVelocity.y >= 450)
+                    {
+                       Debug.Log("SELECT ITEM:" + leftHand.PalmVelocity.y);
+                        //Debug.Log(hit2D.collider.gameObject.tag);
+                        hit2D.collider.gameObject.GetComponent<ButtonInformation>().click();
+                    }
+                }
+            }
+
+            if (Physics.Raycast(temporigin, tempdirection, out hit) &&
+                    indexFinger.IsExtended)
+            {
                 // Threshold below which not to update (prevent glitchiness)
-                if(hit.distance > 0.01) {
+                if (hit.distance > 0.01)
+                {
                     Origin = temporigin;
                     Direction = tempdirection;
                     HitPosition = hit.point;
                     UpdatePointingRay();
 
-                    if(mode != Mode.Active) {
+
+                    if (mode != Mode.Active)
+                    {
                         var newobj = hit.collider.gameObject;
 
-                        if(!IsRoom(newobj) && currentobj != newobj) {
+                        if (!IsRoom(newobj) && currentobj != newobj)
+                        {
                             StartPointing(newobj);
-                        } else if(IsRoom(newobj)) {
+                        }
+                        else if (IsRoom(newobj))
+                        {
                             StopPointing();
                         }
                     }
                 }
-            } else {
+            }
+            else
+            {
                 StopPointing();
                 SetPointingRayEnabled(false);
                 SetMode(Mode.Search);
             }
-
-
-            if (inMenu && indexFinger.IsExtended)
+            /*if (inMenu && indexFinger.IsExtended)
             {
                 if(indexFinger.TipVelocity.z > 400)
-                    Debug.Log("fingerTAP!");
-            }
+                    Debug.Log("fingerTAP!: " + indexFinger.TipPosition);
+            }*/
         }
 
         if(mode == Mode.Hover && leftHand.GrabStrength >= kGrabTreshold) {
@@ -224,17 +252,35 @@ public class GestureController : MonoBehaviour {
             MovePointing();
         }
 
-       
 
-        /*GestureList gestures = frame.Gestures();
+        GestureList gestures = frame.Gestures();
         foreach(Gesture g in gestures)
         {
-            if(g.Type == Gesture.GestureType.TYPE_SCREEN_TAP)
+            /*if(g.Type == Gesture.GestureType.TYPE_SCREEN_TAP)
             {
                 ScreenTapGesture tap = new ScreenTapGesture(g);
                 Debug.Log("screentap! :" + tap.Position);
+            }*/
+            if (g.Type == Gesture.GestureType.TYPE_CIRCLE)
+            {
+                    CircleGesture circle = new CircleGesture(g);
+
+                    if (circle.State == Gesture.GestureState.STATE_STOP)
+                    {
+
+                        if (circle.Pointable.Direction.AngleTo(circle.Normal) <= Math.PI / 2)
+                        {
+                            Debug.Log("clockwise ");
+                            break;
+                        }
+                        else
+                        {
+                            Debug.Log("counterclockwise");
+                            break;
+                        }
+                    }
             }
-        }*/
+        }
 
 	}
 }
