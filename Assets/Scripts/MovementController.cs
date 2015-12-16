@@ -67,6 +67,16 @@ public class MovementController : MonoBehaviour {
 	
 	}
 
+    void Update() {
+        if(mHighlight != Highlight.Select && mHighlight != Highlight.Hover) {
+            if(mCollides) {
+                SetHighlight(Highlight.Collision);
+            } else {
+                SetHighlight(Highlight.None);
+            }
+        }
+    }
+
     void OnPointingStart() {
         SetHighlight(Highlight.Hover);
     }

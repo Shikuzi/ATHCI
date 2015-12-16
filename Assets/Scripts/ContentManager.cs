@@ -53,7 +53,6 @@ public class ContentManager : MonoBehaviour {
                 int row = (items / 7);
                 int col = (items % 7) - 1;
 
-                
                 transform.GetChild(row).transform.GetChild(col).gameObject.GetComponent<Button>().enabled = true;
                 transform.GetChild(row).transform.GetChild(col).gameObject.GetComponent<Button>().GetComponent<ButtonInformation>().setInformation(row, col);
                 transform.GetChild(row).transform.GetChild(col).gameObject.GetComponent<Image>().enabled = true;

@@ -21,6 +21,9 @@ public class GestureController : MonoBehaviour {
     GameObject pointingRay;
     GameObject cylinder;
 
+    private float lastMenuChange = 0;
+    private const float kMenuDelay = 2;
+
     HandController handController;
 
     public static Vector3 Origin { get; set; }
@@ -157,17 +160,24 @@ public class GestureController : MonoBehaviour {
             SetPointingRayEnabled(false);
             SetMode(Mode.Search);
 
-            if (leftHand != null && leftHand.IsLeft)//open menu
-            {
-                if (leftHand.PalmVelocity.y > 300)
-                {
-                    inMenu = true;
-                    ui.setDropDown(true);
-                }
-                else if (leftHand.PalmVelocity.y < -300)
-                {
-                    inMenu = false;
-                    ui.setDropDown(false);
+            // Open menu
+            if(leftHand != null && leftHand.IsLeft) {
+                if(leftHand.PalmVelocity.y > 300 && !inMenu) {
+                    var now = Time.time;
+
+                    if((now - lastMenuChange) > kMenuDelay) {
+                        inMenu = true;
+                        ui.setDropDown(true);
+                        lastMenuChange = now;
+                    }
+                } else if(leftHand.PalmVelocity.y < -300 && inMenu) {
+                    var now = Time.time;
+
+                    if((now - lastMenuChange) > kMenuDelay) {
+                        inMenu = false;
+                        ui.setDropDown(false);
+                        lastMenuChange = now;
+                    }
                 }
             }
 
@@ -190,13 +200,16 @@ public class GestureController : MonoBehaviour {
 
             if (inMenu)
             {
+                Debug.Log("SELECT ITEM:" + leftHand.PalmVelocity.z);
                 if (hit2D != null && hit2D.collider != null)
                 {
-                    if (hit2D.collider.gameObject.tag.CompareTo("Button") == 0 && leftHand != null && leftHand.IsLeft && leftHand.PalmVelocity.y >= 450)
-                    {
-                       Debug.Log("SELECT ITEM:" + leftHand.PalmVelocity.y);
+                    Debug.Log("HIT!");
+                    if (hit2D.collider.gameObject.tag.CompareTo("Button") == 0 
+                            && leftHand != null && 
+                            leftHand.IsLeft && leftHand.PalmVelocity.z < -150) {
                         //Debug.Log(hit2D.collider.gameObject.tag);
-                        hit2D.collider.gameObject.GetComponent<ButtonInformation>().click();
+                        hit2D.collider.gameObject.
+                            GetComponent<ButtonInformation>().click();
                     }
                 }
             }
